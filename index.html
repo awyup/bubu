@@ -41,6 +41,8 @@
     a {
       color: var(--accent);
       text-decoration: underline;
+      display: block;
+      margin-bottom: 10px; /* NEW SPACING */
     }
     .container {
       max-width: 500px;
@@ -108,9 +110,6 @@
     }
     body.dark button[type="button"]:hover {
       background-color: #444;
-    }
-    #result a {
-      word-break: break-word;
     }
     #result {
       font-size: 1rem;
@@ -209,9 +208,17 @@
       openAllBtn.addEventListener('click', function(){
         const links = resultDiv.querySelectorAll('a');
         const openLimit = Math.min(links.length, 10);
-        for (let i = 0; i < openLimit; i++) {
-          window.open(links[i].href, '_blank');
-        }
+
+        let i = 0;
+        const openNext = () => {
+          if (i < openLimit) {
+            window.open(links[i].href, '_blank');
+            i++;
+            setTimeout(openNext, 250); // Delay to trick Safari
+          }
+        };
+        openNext();
+
         if (links.length > 10) {
           alert("Only the first 10 links were opened to avoid popup blocking.");
         }
