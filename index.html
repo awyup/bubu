@@ -7,24 +7,7 @@
 
   <!-- 💲 Favicon -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💲</text></svg>">
-
-  <!-- 📦 Manifest embedded inside the page -->
-  <link rel="manifest" href="data:application/manifest+json,{
-    &quot;name&quot;: &quot;BIE PopNow Box Gen&quot;,
-    &quot;short_name&quot;: &quot;PopNow Gen&quot;,
-    &quot;start_url&quot;: &quot;./index.html&quot;,
-    &quot;display&quot;: &quot;standalone&quot;,
-    &quot;background_color&quot;: &quot;#fdfdfd&quot;,
-    &quot;theme_color&quot;: &quot;#0077cc&quot;,
-    &quot;icons&quot;: [
-      {
-        &quot;src&quot;: &quot;data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;text y='.9em' font-size='90'&gt;💲&lt;/text&gt;&lt;/svg&gt;&quot;,
-        &quot;sizes&quot;: &quot;192x192&quot;,
-        &quot;type&quot;: &quot;image/svg+xml&quot;
-      }
-    ]
-  }">
-
+  
   <meta name="theme-color" content="#0077cc" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -78,40 +61,32 @@
       color: var(--clicked-color) !important;
       text-decoration: line-through !important;
     }
-    @keyframes fadeIn {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    .container {
-      max-width: 500px;
-      margin: 5% auto;
-      padding: 0 1rem;
-    }
-    h1 {
-      text-align: center;
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-    }
-    #theme-toggle {
-      display: block;
-      margin: 10px auto;
-      background: none;
-      border: 2px solid currentColor;
-      border-radius: 5px;
-      padding: 0.25rem 0.5rem;
-      font: inherit;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    #theme-toggle:hover { background: rgba(127,127,127,0.1); }
-    form {
+    @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+    .container { max-width: 500px; margin: 5% auto; padding: 0 1rem; }
+    h1 { text-align: center; font-size: 1.5rem; margin-bottom: 1rem; }
+    #toolbar {
       display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
+      justify-content: center;
+      gap: 10px;
+      margin: 1rem;
     }
+    button, #theme-toggle, #install-btn {
+      padding: 0.5rem;
+      border: 1px solid var(--button-border-light);
+      border-radius: 4px;
+      background: var(--button-bg-light);
+      color: var(--text-light);
+      font: inherit;
+      cursor: pointer;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    body.dark button, body.dark #theme-toggle, body.dark #install-btn {
+      background: var(--button-bg-dark);
+      border-color: var(--button-border-dark);
+      color: var(--text-dark);
+    }
+    button:hover { background: #e0e0e0; }
+    body.dark button:hover { background: #444; }
     label { font-size: 1rem; }
     input[type="text"], input[type="number"] {
       padding: 0.5rem;
@@ -122,50 +97,24 @@
       font: inherit;
       transition: background 0.3s, border-color 0.3s;
     }
-    body.dark input[type="text"],
-    body.dark input[type="number"] {
+    body.dark input[type="text"], body.dark input[type="number"] {
       background: var(--input-bg-dark);
       border-color: var(--input-border-dark);
       color: var(--text-dark);
     }
-    button[type="button"] {
-      padding: 0.5rem;
-      border: 1px solid var(--button-border-light);
-      border-radius: 4px;
-      background: var(--button-bg-light);
-      color: var(--text-light);
-      font: inherit;
-      cursor: pointer;
-      transition: background 0.3s, border-color 0.3s;
-    }
-    body.dark button[type="button"] {
-      background: var(--button-bg-dark);
-      border-color: var(--button-border-dark);
-      color: var(--text-dark);
-    }
-    button[type="button"]:hover { background: #e0e0e0; }
-    body.dark button[type="button"]:hover { background: #444; }
-    #result {
-      margin-top: 1rem;
-      text-align: center;
-    }
-    #openAllBtn, #resetAllBtn {
-      margin-top: 15px;
-      display: none;
-    }
-    #loadingSpinner {
-      display: none;
-      text-align: center;
-      margin-top: 1rem;
-      font-size: 1.2rem;
-    }
+    #result { margin-top: 1rem; text-align: center; }
+    #openAllBtn, #resetAllBtn { margin-top: 15px; display: none; }
+    #loadingSpinner { display: none; text-align: center; margin-top: 1rem; font-size: 1.2rem; }
   </style>
 </head>
 
 <body>
-  <div class="container">
+  <div id="toolbar">
     <button id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+    <button id="install-btn" style="display:none;">📦 Install App</button>
+  </div>
 
+  <div class="container">
     <h1>BIE PopNow Box Gen</h1>
 
     <form onsubmit="return false;">
@@ -189,6 +138,7 @@
 (function(){
   const body = document.body;
   const toggleBtn = document.getElementById('theme-toggle');
+  const installBtn = document.getElementById('install-btn');
   const numberInput = document.getElementById('numberInput');
   const howManyInput = document.getElementById('howManyInput');
   const generateBtn = document.getElementById('generateBtn');
@@ -298,22 +248,7 @@
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-
-    const installBtn = document.createElement('button');
-    installBtn.textContent = '📦 Install App';
-    installBtn.style.marginTop = '20px';
-    installBtn.style.padding = '10px';
-    installBtn.style.fontSize = '1rem';
-    installBtn.style.cursor = 'pointer';
-    installBtn.style.display = 'block';
-    installBtn.style.marginLeft = 'auto';
-    installBtn.style.marginRight = 'auto';
-    installBtn.style.backgroundColor = '#0077cc';
-    installBtn.style.color = 'white';
-    installBtn.style.border = 'none';
-    installBtn.style.borderRadius = '8px';
-
-    document.querySelector('.container').appendChild(installBtn);
+    installBtn.style.display = 'inline-block';
 
     installBtn.addEventListener('click', async () => {
       if (deferredPrompt) {
@@ -325,7 +260,7 @@
           console.log('User dismissed install');
         }
         deferredPrompt = null;
-        installBtn.remove();
+        installBtn.style.display = 'none';
       }
     });
   });
