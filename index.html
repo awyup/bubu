@@ -3,7 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BIE PopNow Box Gen</title> <!-- UPDATED TITLE -->
+  <title>BIE PopNow Box Gen</title>
+
+  <!-- 💲 Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💲</text></svg>">
+
+  <!-- 📦 Manifest and mobile meta -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0077cc" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
   <style>
     :root {
       --bg-light: #fdfdfd;
@@ -117,6 +127,12 @@
       margin-top: 15px;
       display: none;
     }
+    #loadingSpinner {
+      display: none;
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 1.2rem;
+    }
   </style>
 </head>
 
@@ -124,7 +140,7 @@
   <div class="container">
     <button id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
 
-    <h1>BIE PopNow Box Gen</h1> <!-- UPDATED HEADING -->
+    <h1>BIE PopNow Box Gen</h1>
 
     <form onsubmit="return false;">
       <label for="numberInput">Enter starting set number:</label>
@@ -136,6 +152,7 @@
       <button type="button" id="generateBtn">Generate Random Links</button>
     </form>
 
+    <div id="loadingSpinner">Loading... ⏳</div>
     <div id="result"></div>
 
     <button type="button" id="openAllBtn">Open All Links (Max 10)</button>
@@ -152,6 +169,7 @@
     const resultDiv = document.getElementById('result');
     const openAllBtn = document.getElementById('openAllBtn');
     const resetAllBtn = document.getElementById('resetAllBtn');
+    const loadingSpinner = document.getElementById('loadingSpinner');
 
     const isMobile = /Mobi|Android/i.test(navigator.userAgent);
     const baseUrl = isMobile
@@ -187,38 +205,44 @@
         return;
       }
 
-      const min = startNum - 1000, max = startNum + 1000;
-      const nums = new Set();
-      resultDiv.style.color = "inherit";
+      loadingSpinner.style.display = 'block'; 
       resultDiv.innerHTML = "";
 
-      while (nums.size < howMany) {
-        const n = Math.floor(Math.random()*(max-min+1))+min;
-        if (n>0) nums.add(n);
-      }
+      setTimeout(() => {
+        loadingSpinner.style.display = 'none'; 
 
-      nums.forEach(n => {
-        const code = isMobile
-          ? "10000"+n+"01806"
-          : n;
-        const href = baseUrl + code;
-        const a = document.createElement('a');
-        a.href = href;
-        a.target = "_blank";
-        a.textContent = href;
-        a.addEventListener('click', () => {
-          a.classList.add('clicked-link');
-          if (!a.textContent.includes("✅")) {
-            a.textContent += " ✅";
-          }
+        const min = startNum - 1000, max = startNum + 1000;
+        const nums = new Set();
+        resultDiv.style.color = "inherit";
+
+        while (nums.size < howMany) {
+          const n = Math.floor(Math.random()*(max-min+1))+min;
+          if (n>0) nums.add(n);
+        }
+
+        nums.forEach(n => {
+          const code = isMobile
+            ? "10000"+n+"01806"
+            : n;
+          const href = baseUrl + code;
+          const a = document.createElement('a');
+          a.href = href;
+          a.target = "_blank";
+          a.textContent = href;
+          a.addEventListener('click', () => {
+            a.classList.add('clicked-link');
+            if (!a.textContent.includes("✅")) {
+              a.textContent += " ✅";
+            }
+          });
+          resultDiv.appendChild(a);
         });
-        resultDiv.appendChild(a);
-      });
 
-      resultDiv.scrollIntoView({ behavior: "smooth" });
+        resultDiv.scrollIntoView({ behavior: "smooth" });
 
-      if (!isMobile) openAllBtn.style.display = 'block';
-      resetAllBtn.style.display = 'block';
+        if (!isMobile) openAllBtn.style.display = 'block';
+        resetAllBtn.style.display = 'block';
+      }, 400);
     });
 
     openAllBtn.addEventListener('click', () => {
@@ -240,6 +264,43 @@
       links.forEach(link => {
         link.classList.remove('clicked-link');
         link.textContent = link.href;
+      });
+    });
+
+    // 📦 Install Prompt Handling
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+
+      const installBtn = document.createElement('button');
+      installBtn.textContent = '📦 Install App';
+      installBtn.style.marginTop = '20px';
+      installBtn.style.padding = '10px';
+      installBtn.style.fontSize = '1rem';
+      installBtn.style.cursor = 'pointer';
+      installBtn.style.display = 'block';
+      installBtn.style.marginLeft = 'auto';
+      installBtn.style.marginRight = 'auto';
+      installBtn.style.backgroundColor = '#0077cc';
+      installBtn.style.color = 'white';
+      installBtn.style.border = 'none';
+      installBtn.style.borderRadius = '8px';
+
+      document.querySelector('.container').appendChild(installBtn);
+
+      installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          if (outcome === 'accepted') {
+            console.log('User accepted install');
+          } else {
+            console.log('User dismissed install');
+          }
+          deferredPrompt = null;
+          installBtn.remove();
+        }
       });
     });
   })();
