@@ -1,18 +1,336 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BIE PopNow Box Gen</title>
+
+  <!-- 💲 Favicon -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💲</text></svg>">
-  <link rel="manifest" href="manifest.json" />
+
+  <!-- 📦 Manifest embedded inside the page -->
+  <link rel="manifest" href="data:application/manifest+json,{
+    &quot;name&quot;: &quot;BIE PopNow Box Gen&quot;,
+    &quot;short_name&quot;: &quot;PopNow Gen&quot;,
+    &quot;start_url&quot;: &quot;./index.html&quot;,
+    &quot;display&quot;: &quot;standalone&quot;,
+    &quot;background_color&quot;: &quot;#fdfdfd&quot;,
+    &quot;theme_color&quot;: &quot;#0077cc&quot;,
+    &quot;icons&quot;: [
+      {
+        &quot;src&quot;: &quot;data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;text y='.9em' font-size='90'&gt;💲&lt;/text&gt;&lt;/svg&gt;&quot;,
+        &quot;sizes&quot;: &quot;192x192&quot;,
+        &quot;type&quot;: &quot;image/svg+xml&quot;
+      }
+    ]
+  }">
+
   <meta name="theme-color" content="#0077cc" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+  <style>
+    :root {
+      --bg-light: #fdfdfd;
+      --bg-dark: #121212;
+      --text-light: #333;
+      --text-dark: #e0e0e0;
+      --accent: #0077cc;
+      --accent-dark: #66c0ff;
+      --input-bg-light: #fff;
+      --input-bg-dark: #222;
+      --input-border-light: #ccc;
+      --input-border-dark: #555;
+      --button-bg-light: #f0f0f0;
+      --button-bg-dark: #333;
+      --button-border-light: #bbb;
+      --button-border-dark: #777;
+      --clicked-color: #888;
+    }
+    html, body { margin: 0; padding: 0; scroll-behavior: smooth; }
+    body {
+      background: var(--bg-light);
+      color: var(--text-light);
+      font-family: Arial, sans-serif;
+      transition: background-color 0.5s ease, color 0.5s ease;
+    }
+    body.dark {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+    a {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--accent);
+      text-decoration: none;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeIn 0.5s forwards;
+    }
+    body.dark a {
+      color: var(--accent-dark);
+    }
+    body.dark a.clicked-link {
+      color: var(--clicked-color);
+    }
+    a:hover { text-decoration: underline; }
+    a.clicked-link {
+      color: var(--clicked-color) !important;
+      text-decoration: line-through !important;
+    }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .container {
+      max-width: 500px;
+      margin: 5% auto;
+      padding: 0 1rem;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    #theme-toggle {
+      display: block;
+      margin: 10px auto;
+      background: none;
+      border: 2px solid currentColor;
+      border-radius: 5px;
+      padding: 0.25rem 0.5rem;
+      font: inherit;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #theme-toggle:hover { background: rgba(127,127,127,0.1); }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    label { font-size: 1rem; }
+    input[type="text"], input[type="number"] {
+      padding: 0.5rem;
+      border: 1px solid var(--input-border-light);
+      border-radius: 4px;
+      background: var(--input-bg-light);
+      color: var(--text-light);
+      font: inherit;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    body.dark input[type="text"],
+    body.dark input[type="number"] {
+      background: var(--input-bg-dark);
+      border-color: var(--input-border-dark);
+      color: var(--text-dark);
+    }
+    button[type="button"] {
+      padding: 0.5rem;
+      border: 1px solid var(--button-border-light);
+      border-radius: 4px;
+      background: var(--button-bg-light);
+      color: var(--text-light);
+      font: inherit;
+      cursor: pointer;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    body.dark button[type="button"] {
+      background: var(--button-bg-dark);
+      border-color: var(--button-border-dark);
+      color: var(--text-dark);
+    }
+    button[type="button"]:hover { background: #e0e0e0; }
+    body.dark button[type="button"]:hover { background: #444; }
+    #result {
+      margin-top: 1rem;
+      text-align: center;
+    }
+    #openAllBtn, #resetAllBtn {
+      margin-top: 15px;
+      display: none;
+    }
+    #loadingSpinner {
+      display: none;
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 1.2rem;
+    }
+  </style>
 </head>
+
 <body>
-  <h1>BIE PopNow Box Gen</h1>
-  <script src="main.js"></script>
+  <div class="container">
+    <button id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+
+    <h1>BIE PopNow Box Gen</h1>
+
+    <form onsubmit="return false;">
+      <label for="numberInput">Enter starting set number:</label>
+      <input type="text" id="numberInput" placeholder="e.g. 4153" inputmode="numeric" />
+
+      <label for="howManyInput">How many links to generate:</label>
+      <input type="number" id="howManyInput" placeholder="e.g. 10" />
+
+      <button type="button" id="generateBtn">Generate Random Links</button>
+    </form>
+
+    <div id="loadingSpinner">Loading... ⏳</div>
+    <div id="result"></div>
+
+    <button type="button" id="openAllBtn">Open All Links (Max 10)</button>
+    <button type="button" id="resetAllBtn">Reset All Links</button>
+  </div>
+
+<script>
+(function(){
+  const body = document.body;
+  const toggleBtn = document.getElementById('theme-toggle');
+  const numberInput = document.getElementById('numberInput');
+  const howManyInput = document.getElementById('howManyInput');
+  const generateBtn = document.getElementById('generateBtn');
+  const resultDiv = document.getElementById('result');
+  const openAllBtn = document.getElementById('openAllBtn');
+  const resetAllBtn = document.getElementById('resetAllBtn');
+  const loadingSpinner = document.getElementById('loadingSpinner');
+
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  const baseUrl = isMobile
+    ? "https://m.popmart.com/us/pop-now/set/195-"
+    : "https://popmart.com/#/figureDetail/";
+
+  if (isMobile) openAllBtn.style.display = 'none';
+
+  if (localStorage.getItem('theme') === 'dark') {
+    body.classList.add('dark');
+    toggleBtn.textContent = '☀️';
+  }
+  toggleBtn.addEventListener('click', () => {
+    if (body.classList.toggle('dark')) {
+      toggleBtn.textContent = '☀️';
+      localStorage.setItem('theme','dark');
+    } else {
+      toggleBtn.textContent = '🌙';
+      localStorage.setItem('theme','light');
+    }
+  });
+
+  generateBtn.addEventListener('click', () => {
+    const val = numberInput.value.trim();
+    const howMany = parseInt(howManyInput.value,10);
+    const startNum = parseInt(val,10);
+
+    if (!val || isNaN(startNum) || !/^\d+$/.test(val) || isNaN(howMany) || howMany<1) {
+      resultDiv.textContent = "Enter a valid 4-digit set number and link count.";
+      resultDiv.style.color = "red";
+      openAllBtn.style.display = 'none';
+      resetAllBtn.style.display = 'none';
+      return;
+    }
+
+    loadingSpinner.style.display = 'block';
+    resultDiv.innerHTML = "";
+
+    setTimeout(() => {
+      loadingSpinner.style.display = 'none';
+      const min = startNum - 1000, max = startNum + 1000;
+      const nums = new Set();
+      resultDiv.style.color = "inherit";
+
+      while (nums.size < howMany) {
+        const n = Math.floor(Math.random()*(max-min+1))+min;
+        if (n>0) nums.add(n);
+      }
+
+      nums.forEach(n => {
+        const code = isMobile
+          ? "10000"+n+"01806"
+          : n;
+        const href = baseUrl + code;
+        const a = document.createElement('a');
+        a.href = href;
+        a.target = "_blank";
+        a.textContent = href;
+        a.addEventListener('click', () => {
+          a.classList.add('clicked-link');
+          if (!a.textContent.includes("✅")) {
+            a.textContent += " ✅";
+          }
+        });
+        resultDiv.appendChild(a);
+      });
+
+      resultDiv.scrollIntoView({ behavior: "smooth" });
+
+      if (!isMobile) openAllBtn.style.display = 'block';
+      resetAllBtn.style.display = 'block';
+    }, 400);
+  });
+
+  openAllBtn.addEventListener('click', () => {
+    const links = resultDiv.querySelectorAll('a');
+    let i=0, limit=Math.min(links.length,10);
+    const openNext = ()=> {
+      if(i<limit) {
+        window.open(links[i].href,'_blank');
+        i++;
+        setTimeout(openNext,250);
+      }
+    };
+    openNext();
+    if (links.length>10) alert("Only the first 10 links were opened.");
+  });
+
+  resetAllBtn.addEventListener('click', () => {
+    const links = resultDiv.querySelectorAll('a');
+    links.forEach(link => {
+      link.classList.remove('clicked-link');
+      if (link.textContent.includes('✅')) {
+        link.textContent = link.textContent.replace(' ✅', '');
+      }
+    });
+  });
+
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    const installBtn = document.createElement('button');
+    installBtn.textContent = '📦 Install App';
+    installBtn.style.marginTop = '20px';
+    installBtn.style.padding = '10px';
+    installBtn.style.fontSize = '1rem';
+    installBtn.style.cursor = 'pointer';
+    installBtn.style.display = 'block';
+    installBtn.style.marginLeft = 'auto';
+    installBtn.style.marginRight = 'auto';
+    installBtn.style.backgroundColor = '#0077cc';
+    installBtn.style.color = 'white';
+    installBtn.style.border = 'none';
+    installBtn.style.borderRadius = '8px';
+
+    document.querySelector('.container').appendChild(installBtn);
+
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          console.log('User accepted install');
+        } else {
+          console.log('User dismissed install');
+        }
+        deferredPrompt = null;
+        installBtn.remove();
+      }
+    });
+  });
+})();
+</script>
+
 </body>
 </html>
