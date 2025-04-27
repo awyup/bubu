@@ -204,6 +204,7 @@
         a.href = href;
         a.target = "_blank";
         a.textContent = href;
+        a.setAttribute('data-original-text', href); // ✅ save original text
         a.addEventListener('click', () => {
           a.classList.add('clicked-link');
           if (!a.textContent.includes("✅")) {
@@ -234,12 +235,13 @@
     if (links.length>10) alert("Only the first 10 links were opened.");
   });
 
+  // ✅ Correct ResetAll button (fully resets back to original saved link)
   resetAllBtn.addEventListener('click', () => {
     const links = resultDiv.querySelectorAll('a');
     links.forEach(link => {
       link.classList.remove('clicked-link');
-      if (link.textContent.includes('✅')) {
-        link.textContent = link.textContent.replace(' ✅', '');
+      if (link.hasAttribute('data-original-text')) {
+        link.textContent = link.getAttribute('data-original-text');
       }
     });
   });
