@@ -42,7 +42,7 @@
       color: var(--accent);
       text-decoration: underline;
       display: block;
-      margin-bottom: 10px; /* NEW SPACING */
+      margin-bottom: 10px;
     }
     .container {
       max-width: 500px;
@@ -55,17 +55,17 @@
       margin-bottom: 1rem;
     }
     #theme-toggle {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
       background: none;
       border: 2px solid currentColor;
       border-radius: 5px;
-      padding: 0.5rem 0.75rem;
+      padding: 0.25rem 0.5rem;
       font: inherit;
+      font-size: 0.9rem;
       color: inherit;
       cursor: pointer;
       transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+      margin: 10px auto;
+      display: block;
     }
     #theme-toggle:hover {
       background-color: rgba(127,127,127,0.1);
@@ -123,9 +123,11 @@
 </head>
 
 <body>
-  <button id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
   <div class="container">
+    <button id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+
     <h1>Pop Mart Deluxe Random Link Generator</h1>
+
     <form onsubmit="return false;">
       <label for="numberInput">Enter starting set number:</label>
       <input type="text" id="numberInput" name="number" placeholder="e.g. 4153" inputmode="numeric" />
@@ -214,7 +216,7 @@
           if (i < openLimit) {
             window.open(links[i].href, '_blank');
             i++;
-            setTimeout(openNext, 250); // Delay to trick Safari
+            setTimeout(openNext, 250); // Delay for Safari safety
           }
         };
         openNext();
