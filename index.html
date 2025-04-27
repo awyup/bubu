@@ -1,138 +1,222 @@
 <!DOCTYPE html>
-<html lang=\"en\">
+<html lang="en">
 <head>
-    <meta charset=\"UTF-8\">
-    <title>Pop Mart Deluxe Link Generator</title>
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-    <meta name=\"mobile-web-app-capable\" content=\"yes\">
-    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\">
-    <meta name=\"apple-mobile-web-app-title\" content=\"Pop Mart Link\">
-    <meta name=\"theme-color\" content=\"#ffffff\">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-            background: linear-gradient(to bottom right, #ffffff, #f0f0f0);
-            transition: background 0.5s, color 0.5s;
-        }
-        .dark-mode {
-            background: linear-gradient(to bottom right, #1c1c1c, #000000);
-            color: white;
-        }
-        input, button, select {
-            width: 80%;
-            padding: 12px;
-            font-size: 18px;
-            margin: 10px 0;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-        }
-        input {
-            overflow-x: auto;
-        }
-        button {
-            background-color: #000;
-            color: white;
-            border: none;
-        }
-        .dark-mode button {
-            background-color: #fff;
-            color: #000;
-        }
-        a {
-            display: block;
-            margin-top: 20px;
-            font-size: 18px;
-            word-break: break-word;
-        }
-        .toggle-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 10px;
-            font-size: 14px;
-            background: #000;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-        }
-        .dark-mode .toggle-btn {
-            background: #fff;
-            color: #000;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pop Mart Deluxe Random Link Generator</title>
+  <style>
+    :root {
+      --bg-light: #fdfdfd;
+      --bg-dark: #121212;
+      --text-light: #333;
+      --text-dark: #e0e0e0;
+      --accent: #0077cc;
+      --accent-dark: #66c0ff;
+      --input-bg-light: #fff;
+      --input-bg-dark: #222;
+      --input-border-light: #ccc;
+      --input-border-dark: #555;
+      --button-bg-light: #f0f0f0;
+      --button-bg-dark: #333;
+      --button-border-light: #bbb;
+      --button-border-dark: #777;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: var(--bg-light);
+      color: var(--text-light);
+      font-family: Arial, sans-serif;
+      transition: background-color 0.5s ease, color 0.5s ease;
+    }
+    body.dark {
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+    }
+    body.dark a {
+      color: var(--accent-dark);
+    }
+    a {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+    .container {
+      max-width: 500px;
+      margin: 5% auto;
+      padding: 0 1rem;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    #theme-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: 2px solid currentColor;
+      border-radius: 5px;
+      padding: 0.5rem 0.75rem;
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+    #theme-toggle:hover {
+      background-color: rgba(127,127,127,0.1);
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    label {
+      font-size: 1rem;
+    }
+    input[type="text"], input[type="number"] {
+      padding: 0.5rem;
+      font: inherit;
+      border: 1px solid var(--input-border-light);
+      border-radius: 4px;
+      background-color: var(--input-bg-light);
+      color: inherit;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    body.dark input {
+      border-color: var(--input-border-dark);
+      background-color: var(--input-bg-dark);
+    }
+    button[type="button"] {
+      padding: 0.5rem;
+      font: inherit;
+      border: 1px solid var(--button-border-light);
+      border-radius: 4px;
+      background-color: var(--button-bg-light);
+      color: inherit;
+      cursor: pointer;
+      transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+    }
+    body.dark button[type="button"] {
+      border-color: var(--button-border-dark);
+      background-color: var(--button-bg-dark);
+    }
+    button[type="button"]:hover {
+      background-color: #e0e0e0;
+    }
+    body.dark button[type="button"]:hover {
+      background-color: #444;
+    }
+    #result a {
+      word-break: break-word;
+    }
+    #result {
+      font-size: 1rem;
+      margin-top: 1rem;
+      text-align: center;
+    }
+    #openAllBtn {
+      margin-top: 15px;
+    }
+  </style>
 </head>
+
 <body>
-    <button class=\"toggle-btn\" onclick=\"toggleDarkMode()\">Toggle Dark Mode</button>
+  <button id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+  <div class="container">
+    <h1>Pop Mart Deluxe Random Link Generator</h1>
+    <form onsubmit="return false;">
+      <label for="numberInput">Enter starting set number:</label>
+      <input type="text" id="numberInput" name="number" placeholder="e.g. 4153" inputmode="numeric" />
+      
+      <label for="howManyInput">How many links to generate?</label>
+      <input type="number" id="howManyInput" name="howmany" placeholder="e.g. 10" />
 
-    <h2>Pop Mart Deluxe Link Generator</h2>
+      <button type="button" id="generateBtn">Generate Random Links</button>
+    </form>
 
-    <div id=\"step1\">
-        <p><strong>Step 1:</strong> Enter a known set number:</p>
-        <input type=\"text\" id=\"referenceNumber\" placeholder=\"e.g., 4153 or 9001\">
-        <br>
-        <button onclick=\"suggestRange()\">Submit</button>
-    </div>
+    <div id="result"></div>
+    <button type="button" id="openAllBtn" style="display:none;">Open All Links (Max 10)</button>
+  </div>
 
-    <div id=\"step2\" style=\"display:none;\">
-        <p id=\"rangeSuggestion\"></p>
-        <p><strong>Step 2:</strong> Select a nearby number:</p>
-        <select id=\"suggestionsDropdown\">
-            <option value=\"\">--Select Number--</option>
-        </select>
-        <br>
-        <button onclick=\"generateLink()\">Generate Link</button>
-    </div>
+  <script>
+    (function(){
+      const body = document.body;
+      const toggleBtn = document.getElementById('theme-toggle');
+      const numberInput = document.getElementById('numberInput');
+      const howManyInput = document.getElementById('howManyInput');
+      const generateBtn = document.getElementById('generateBtn');
+      const resultDiv = document.getElementById('result');
+      const openAllBtn = document.getElementById('openAllBtn');
+      const baseUrl = "https://m.popmart.com/us/pop-now/set/195-";
 
-    <p id=\"result\"></p>
+      if(localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark');
+        toggleBtn.textContent = '☀️';
+      }
+      toggleBtn.addEventListener('click', function(){
+        if(body.classList.contains('dark')) {
+          body.classList.remove('dark');
+          toggleBtn.textContent = '🌙';
+          localStorage.setItem('theme', 'light');
+        } else {
+          body.classList.add('dark');
+          toggleBtn.textContent = '☀️';
+          localStorage.setItem('theme', 'dark');
+        }
+      });
 
-    <script>
-        let refNum = 0;
+      generateBtn.addEventListener('click', function(){
+        const val = numberInput.value.trim();
+        const howMany = parseInt(howManyInput.value.trim(), 10);
+        const startNum = parseInt(val, 10);
 
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
+        if(!val || isNaN(startNum) || !/^\d+$/.test(val) || isNaN(howMany) || howMany < 1) {
+          resultDiv.textContent = "Please enter a valid 4-digit set number and a number of links.";
+          resultDiv.style.color = "red";
+          openAllBtn.style.display = "none";
+          return;
         }
 
-        function suggestRange() {
-            const refInput = document.getElementById(\"referenceNumber\").value.trim();
-            if (refInput.length === 4 && !isNaN(refInput)) {
-                refNum = parseInt(refInput, 10);
-                const lower = refNum - 50;
-                const upper = refNum + 50;
-                document.getElementById(\"rangeSuggestion\").innerHTML = 
-                    `Recommended: Try numbers between <strong>${lower}</strong> and <strong>${upper}</strong>.`;
+        const min = startNum - 1000;
+        const max = startNum + 1000;
+        const generatedNumbers = new Set();
+        resultDiv.style.color = "inherit";
+        resultDiv.innerHTML = "";
 
-                let dropdown = document.getElementById(\"suggestionsDropdown\");
-                dropdown.innerHTML = '<option value=\"\">--Select Number--</option>';
-
-                for (let i = lower; i <= upper; i++) {
-                    if (i > 0) {
-                        let option = document.createElement(\"option\");
-                        option.value = i;
-                        option.text = i;
-                        dropdown.appendChild(option);
-                    }
-                }
-
-                document.getElementById(\"step2\").style.display = \"block\";
-            } else {
-                alert(\"Please enter a valid 4-digit set number.\");
-            }
+        while (generatedNumbers.size < howMany) {
+          const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
+          if (randomNum > 0) {
+            generatedNumbers.add(randomNum);
+          }
         }
 
-        function generateLink() {
-            const baseUrl = \"https://m.popmart.com/us/pop-now/set/195-\";
-            const core = document.getElementById(\"suggestionsDropdown\").value;
-            if (core && !isNaN(core)) {
-                const fullNumber = \"10000\" + core + \"01806\";
-                const fullLink = baseUrl + fullNumber;
-                document.getElementById(\"result\").innerHTML = 
-                    `<a href=\"${fullLink}\" target=\"_blank\">${fullLink}</a>`;
-            } else {
-                document.getElementById(\"result\").textContent = \"Please select a number from the list.\";
-            }
+        generatedNumbers.forEach(num => {
+          const fullNumber = "10000" + num + "01806";
+          const fullLink = baseUrl + fullNumber;
+          const link = document.createElement("a");
+          link.href = fullLink;
+          link.target = "_blank";
+          link.textContent = fullLink;
+          resultDiv.appendChild(link);
+        });
+
+        openAllBtn.style.display = "block";
+      });
+
+      openAllBtn.addEventListener('click', function(){
+        const links = resultDiv.querySelectorAll('a');
+        const openLimit = Math.min(links.length, 10);
+        for (let i = 0; i < openLimit; i++) {
+          window.open(links[i].href, '_blank');
         }
-    </script>
+        if (links.length > 10) {
+          alert("Only the first 10 links were opened to avoid popup blocking.");
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
