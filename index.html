@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pop Mart Deluxe Random Link Generator</title>
+  <title>BIE PopNow Box Gen</title> <!-- UPDATED TITLE -->
   <style>
     :root {
       --bg-light: #fdfdfd;
@@ -27,7 +27,7 @@
       background: var(--bg-light);
       color: var(--text-light);
       font-family: Arial, sans-serif;
-      transition: background-color 0.5s, color 0.5s;
+      transition: background-color 0.5s ease, color 0.5s ease;
     }
     body.dark {
       background: var(--bg-dark);
@@ -124,7 +124,7 @@
   <div class="container">
     <button id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
 
-    <h1>Pop Mart Deluxe Random Link Generator</h1>
+    <h1>BIE PopNow Box Gen</h1> <!-- UPDATED HEADING -->
 
     <form onsubmit="return false;">
       <label for="numberInput">Enter starting set number:</label>
@@ -215,7 +215,6 @@
         resultDiv.appendChild(a);
       });
 
-      // Auto-scroll to results
       resultDiv.scrollIntoView({ behavior: "smooth" });
 
       if (!isMobile) openAllBtn.style.display = 'block';
@@ -240,7 +239,7 @@
       const links = resultDiv.querySelectorAll('a');
       links.forEach(link => {
         link.classList.remove('clicked-link');
-        link.textContent = link.href; // Reset text
+        link.textContent = link.href;
       });
     });
   })();
