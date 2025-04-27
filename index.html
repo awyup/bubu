@@ -1,31 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang=\"en\">
 <head>
-    <meta charset="UTF-8">
-    <title>Pop Mart Smart Link Generator</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="Pop Mart Link">
-    <meta name="theme-color" content="#ffffff">
+    <meta charset=\"UTF-8\">
+    <title>Pop Mart Deluxe Link Generator</title>
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <meta name=\"mobile-web-app-capable\" content=\"yes\">
+    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\">
+    <meta name=\"apple-mobile-web-app-title\" content=\"Pop Mart Link\">
+    <meta name=\"theme-color\" content=\"#ffffff\">
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 20px;
-            background: #f7f7f7;
+            background: linear-gradient(to bottom right, #ffffff, #f0f0f0);
+            transition: background 0.5s, color 0.5s;
         }
-        input, button {
+        .dark-mode {
+            background: linear-gradient(to bottom right, #1c1c1c, #000000);
+            color: white;
+        }
+        input, button, select {
             width: 80%;
             padding: 12px;
             font-size: 18px;
             margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        input {
+            overflow-x: auto;
         }
         button {
             background-color: #000;
             color: white;
             border: none;
-            border-radius: 6px;
+        }
+        .dark-mode button {
+            background-color: #fff;
+            color: #000;
         }
         a {
             display: block;
@@ -33,64 +46,91 @@
             font-size: 18px;
             word-break: break-word;
         }
+        .toggle-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px;
+            font-size: 14px;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+        }
+        .dark-mode .toggle-btn {
+            background: #fff;
+            color: #000;
+        }
     </style>
 </head>
 <body>
-    <h2>Pop Mart Smart Link Generator</h2>
+    <button class=\"toggle-btn\" onclick=\"toggleDarkMode()\">Toggle Dark Mode</button>
 
-    <div id="step1">
+    <h2>Pop Mart Deluxe Link Generator</h2>
+
+    <div id=\"step1\">
         <p><strong>Step 1:</strong> Enter a known set number:</p>
-        <input type="text" id="referenceNumber" placeholder="e.g., 4153 or 9001">
+        <input type=\"text\" id=\"referenceNumber\" placeholder=\"e.g., 4153 or 9001\">
         <br>
-        <button onclick="suggestRange()">Submit</button>
+        <button onclick=\"suggestRange()\">Submit</button>
     </div>
 
-    <div id="step2" style="display:none;">
-        <p id="rangeSuggestion"></p>
-        <p><strong>Step 2:</strong> Enter a number to generate a link:</p>
-        <input type="text" id="coreNumber" placeholder="e.g., 4154">
+    <div id=\"step2\" style=\"display:none;\">
+        <p id=\"rangeSuggestion\"></p>
+        <p><strong>Step 2:</strong> Select a nearby number:</p>
+        <select id=\"suggestionsDropdown\">
+            <option value=\"\">--Select Number--</option>
+        </select>
         <br>
-        <button onclick="generateLink()">Generate Link</button>
+        <button onclick=\"generateLink()\">Generate Link</button>
     </div>
 
-    <p id="result"></p>
+    <p id=\"result\"></p>
 
     <script>
         let refNum = 0;
 
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+
         function suggestRange() {
-            const refInput = document.getElementById("referenceNumber").value.trim();
+            const refInput = document.getElementById(\"referenceNumber\").value.trim();
             if (refInput.length === 4 && !isNaN(refInput)) {
                 refNum = parseInt(refInput, 10);
-                const lower = refNum - 100;
-                const upper = refNum + 100;
-                document.getElementById("rangeSuggestion").innerHTML = 
+                const lower = refNum - 50;
+                const upper = refNum + 50;
+                document.getElementById(\"rangeSuggestion\").innerHTML = 
                     `Recommended: Try numbers between <strong>${lower}</strong> and <strong>${upper}</strong>.`;
-                document.getElementById("step2").style.display = "block";
+
+                let dropdown = document.getElementById(\"suggestionsDropdown\");
+                dropdown.innerHTML = '<option value=\"\">--Select Number--</option>';
+
+                for (let i = lower; i <= upper; i++) {
+                    if (i > 0) {
+                        let option = document.createElement(\"option\");
+                        option.value = i;
+                        option.text = i;
+                        dropdown.appendChild(option);
+                    }
+                }
+
+                document.getElementById(\"step2\").style.display = \"block\";
             } else {
-                alert("Please enter a valid 4-digit set number.");
+                alert(\"Please enter a valid 4-digit set number.\");
             }
         }
 
         function generateLink() {
-            const baseUrl = "https://m.popmart.com/us/pop-now/set/195-";
-            const core = document.getElementById("coreNumber").value.trim();
-            const coreNum = parseInt(core, 10);
-
-            if (core.length === 4 && !isNaN(coreNum)) {
-                if (Math.abs(coreNum - refNum) > 200) {
-                    document.getElementById("result").innerHTML = 
-                        "Warning: This number is far from the recommended range.<br><br>";
-                } else {
-                    document.getElementById("result").innerHTML = "";
-                }
-
-                const fullNumber = "10000" + core + "01806";
+            const baseUrl = \"https://m.popmart.com/us/pop-now/set/195-\";
+            const core = document.getElementById(\"suggestionsDropdown\").value;
+            if (core && !isNaN(core)) {
+                const fullNumber = \"10000\" + core + \"01806\";
                 const fullLink = baseUrl + fullNumber;
-                document.getElementById("result").innerHTML += 
-                    `<a href="${fullLink}" target="_blank">${fullLink}</a>`;
+                document.getElementById(\"result\").innerHTML = 
+                    `<a href=\"${fullLink}\" target=\"_blank\">${fullLink}</a>`;
             } else {
-                document.getElementById("result").textContent = "Please enter a valid 4-digit number.";
+                document.getElementById(\"result\").textContent = \"Please select a number from the list.\";
             }
         }
     </script>
