@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Pop Mart Quick Link App</title>
+    <title>Pop Mart Smart Link Generator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -15,15 +15,13 @@
             padding: 20px;
             background: #f7f7f7;
         }
-        input {
+        input, button {
             width: 80%;
             padding: 12px;
             font-size: 18px;
             margin: 10px 0;
         }
         button {
-            padding: 12px 24px;
-            font-size: 18px;
             background-color: #000;
             color: white;
             border: none;
@@ -38,20 +36,58 @@
     </style>
 </head>
 <body>
-    <h2>Pop Mart Quick Link Generator</h2>
-    <input type="text" id="coreNumber" placeholder="Enter 4-digit core number (e.g., 4153)">
-    <br>
-    <button onclick="generateLink()">Generate Link</button>
+    <h2>Pop Mart Smart Link Generator</h2>
+
+    <div id="step1">
+        <p><strong>Step 1:</strong> Enter a known set number:</p>
+        <input type="text" id="referenceNumber" placeholder="e.g., 4153 or 9001">
+        <br>
+        <button onclick="suggestRange()">Submit</button>
+    </div>
+
+    <div id="step2" style="display:none;">
+        <p id="rangeSuggestion"></p>
+        <p><strong>Step 2:</strong> Enter a number to generate a link:</p>
+        <input type="text" id="coreNumber" placeholder="e.g., 4154">
+        <br>
+        <button onclick="generateLink()">Generate Link</button>
+    </div>
+
     <p id="result"></p>
 
     <script>
+        let refNum = 0;
+
+        function suggestRange() {
+            const refInput = document.getElementById("referenceNumber").value.trim();
+            if (refInput.length === 4 && !isNaN(refInput)) {
+                refNum = parseInt(refInput, 10);
+                const lower = refNum - 100;
+                const upper = refNum + 100;
+                document.getElementById("rangeSuggestion").innerHTML = 
+                    `Recommended: Try numbers between <strong>${lower}</strong> and <strong>${upper}</strong>.`;
+                document.getElementById("step2").style.display = "block";
+            } else {
+                alert("Please enter a valid 4-digit set number.");
+            }
+        }
+
         function generateLink() {
             const baseUrl = "https://m.popmart.com/us/pop-now/set/195-";
             const core = document.getElementById("coreNumber").value.trim();
-            if (core.length === 4 && !isNaN(core)) {
+            const coreNum = parseInt(core, 10);
+
+            if (core.length === 4 && !isNaN(coreNum)) {
+                if (Math.abs(coreNum - refNum) > 200) {
+                    document.getElementById("result").innerHTML = 
+                        "Warning: This number is far from the recommended range.<br><br>";
+                } else {
+                    document.getElementById("result").innerHTML = "";
+                }
+
                 const fullNumber = "10000" + core + "01806";
                 const fullLink = baseUrl + fullNumber;
-                document.getElementById("result").innerHTML = 
+                document.getElementById("result").innerHTML += 
                     `<a href="${fullLink}" target="_blank">${fullLink}</a>`;
             } else {
                 document.getElementById("result").textContent = "Please enter a valid 4-digit number.";
