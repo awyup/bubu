@@ -172,7 +172,6 @@
   <script>
 // Same script as previous version (with install prompt, loading spinner, and app behavior)
   </script>
-  <script>
 (function(){
   const body = document.body;
   const toggleBtn = document.getElementById('theme-toggle');
@@ -271,11 +270,14 @@
     if (links.length>10) alert("Only the first 10 links were opened.");
   });
 
+  // ✅ Corrected ResetAll button (remove check emoji + reset text)
   resetAllBtn.addEventListener('click', () => {
     const links = resultDiv.querySelectorAll('a');
     links.forEach(link => {
       link.classList.remove('clicked-link');
-      link.textContent = link.href;
+      if (link.textContent.includes('✅')) {
+        link.textContent = link.textContent.replace(' ✅', '');
+      }
     });
   });
 
