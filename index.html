@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BIE PopNow Box Gen</title>
 
-  <!-- 💲 Favicon -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💲</text></svg>">
   
   <meta name="theme-color" content="#0077cc" />
@@ -37,10 +36,7 @@
       font-family: Arial, sans-serif;
       transition: background-color 0.5s ease, color 0.5s ease;
     }
-    body.dark {
-      background: var(--bg-dark);
-      color: var(--text-dark);
-    }
+    body.dark { background: var(--bg-dark); color: var(--text-dark); }
     a {
       display: block;
       margin-bottom: 10px;
@@ -50,12 +46,8 @@
       transform: translateY(10px);
       animation: fadeIn 0.5s forwards;
     }
-    body.dark a {
-      color: var(--accent-dark);
-    }
-    body.dark a.clicked-link {
-      color: var(--clicked-color);
-    }
+    body.dark a { color: var(--accent-dark); }
+    body.dark a.clicked-link { color: var(--clicked-color); }
     a:hover { text-decoration: underline; }
     a.clicked-link {
       color: var(--clicked-color) !important;
@@ -103,7 +95,7 @@
       color: var(--text-dark);
     }
     #result { margin-top: 1rem; text-align: center; }
-    #openAllBtn, #resetAllBtn { margin-top: 15px; display: none; }
+    #openAllBtn { margin-top: 15px; display: none; }
     #loadingSpinner { display: none; text-align: center; margin-top: 1rem; font-size: 1.2rem; }
   </style>
 </head>
@@ -131,7 +123,6 @@
     <div id="result"></div>
 
     <button type="button" id="openAllBtn">Open All Links (Max 10)</button>
-    <button type="button" id="resetAllBtn">Reset All Links</button>
   </div>
 
 <script>
@@ -144,7 +135,6 @@
   const generateBtn = document.getElementById('generateBtn');
   const resultDiv = document.getElementById('result');
   const openAllBtn = document.getElementById('openAllBtn');
-  const resetAllBtn = document.getElementById('resetAllBtn');
   const loadingSpinner = document.getElementById('loadingSpinner');
 
   const isMobile = /Mobi|Android/i.test(navigator.userAgent);
@@ -168,6 +158,20 @@
     }
   });
 
+  numberInput.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      howManyInput.focus();
+    }
+  });
+
+  howManyInput.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      generateBtn.click();
+    }
+  });
+
   generateBtn.addEventListener('click', () => {
     const val = numberInput.value.trim();
     const howMany = parseInt(howManyInput.value,10);
@@ -177,7 +181,6 @@
       resultDiv.textContent = "Enter a valid 4-digit set number and link count.";
       resultDiv.style.color = "red";
       openAllBtn.style.display = 'none';
-      resetAllBtn.style.display = 'none';
       return;
     }
 
@@ -204,7 +207,6 @@
         a.href = href;
         a.target = "_blank";
         a.textContent = href;
-        a.setAttribute('data-original-text', href); // ✅ save original text
         a.addEventListener('click', () => {
           a.classList.add('clicked-link');
           if (!a.textContent.includes("✅")) {
@@ -217,7 +219,6 @@
       resultDiv.scrollIntoView({ behavior: "smooth" });
 
       if (!isMobile) openAllBtn.style.display = 'block';
-      resetAllBtn.style.display = 'block';
     }, 400);
   });
 
@@ -233,17 +234,6 @@
     };
     openNext();
     if (links.length>10) alert("Only the first 10 links were opened.");
-  });
-
-  // ✅ Correct ResetAll button (fully resets back to original saved link)
-  resetAllBtn.addEventListener('click', () => {
-    const links = resultDiv.querySelectorAll('a');
-    links.forEach(link => {
-      link.classList.remove('clicked-link');
-      if (link.hasAttribute('data-original-text')) {
-        link.textContent = link.getAttribute('data-original-text');
-      }
-    });
   });
 
   let deferredPrompt;
