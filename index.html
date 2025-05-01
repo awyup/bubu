@@ -137,12 +137,12 @@
   const openAllBtn = document.getElementById('openAllBtn');
   const loadingSpinner = document.getElementById('loadingSpinner');
 
-  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-  const baseUrl = isMobile
-    ? "https://m.popmart.com/us/pop-now/set/195-"
-    : "https://popmart.com/#/figureDetail/";
+  // ✅ Always use mobile U.S. link to avoid Canada redirection
+  const baseUrl = "https://m.popmart.com/us/pop-now/set/195-";
 
-  if (isMobile) openAllBtn.style.display = 'none';
+  if (/Mobi|Android/i.test(navigator.userAgent)) {
+    openAllBtn.style.display = 'none';
+  }
 
   if (localStorage.getItem('theme') === 'dark') {
     body.classList.add('dark');
@@ -158,6 +158,7 @@
     }
   });
 
+  // ENTER key behavior
   numberInput.addEventListener('keydown', function(e){
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -199,9 +200,7 @@
       }
 
       nums.forEach(n => {
-        const code = isMobile
-          ? "10000"+n+"01806"
-          : n;
+        const code = "10000" + n + "01806";
         const href = baseUrl + code;
         const a = document.createElement('a');
         a.href = href;
@@ -218,7 +217,7 @@
 
       resultDiv.scrollIntoView({ behavior: "smooth" });
 
-      if (!isMobile) openAllBtn.style.display = 'block';
+      openAllBtn.style.display = 'block';
     }, 400);
   });
 
