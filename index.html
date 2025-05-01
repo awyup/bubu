@@ -137,7 +137,6 @@
   const openAllBtn = document.getElementById('openAllBtn');
   const loadingSpinner = document.getElementById('loadingSpinner');
 
-  // ✅ Always use mobile U.S. link to avoid Canada redirection
   const baseUrl = "https://m.popmart.com/us/pop-now/set/195-";
 
   if (/Mobi|Android/i.test(navigator.userAgent)) {
@@ -158,14 +157,12 @@
     }
   });
 
-  // ENTER key behavior
   numberInput.addEventListener('keydown', function(e){
     if (e.key === 'Enter') {
       e.preventDefault();
       howManyInput.focus();
     }
   });
-
   howManyInput.addEventListener('keydown', function(e){
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -190,13 +187,15 @@
 
     setTimeout(() => {
       loadingSpinner.style.display = 'none';
-      const min = startNum - 1000, max = startNum + 1000;
+
+      const blockStart = Math.floor(startNum / 1000) * 1000;
+      const blockEnd = blockStart + 999;
       const nums = new Set();
       resultDiv.style.color = "inherit";
 
       while (nums.size < howMany) {
-        const n = Math.floor(Math.random()*(max-min+1))+min;
-        if (n>0) nums.add(n);
+        const n = Math.floor(Math.random() * (blockEnd - blockStart + 1)) + blockStart;
+        nums.add(n);
       }
 
       nums.forEach(n => {
@@ -216,23 +215,30 @@
       });
 
       resultDiv.scrollIntoView({ behavior: "smooth" });
-
       openAllBtn.style.display = 'block';
     }, 400);
   });
 
   openAllBtn.addEventListener('click', () => {
     const links = resultDiv.querySelectorAll('a');
-    let i=0, limit=Math.min(links.length,10);
-    const openNext = ()=> {
-      if(i<limit) {
-        window.open(links[i].href,'_blank');
+    let i = 0;
+    const limit = Math.min(links.length, 10);
+
+    const openNext = () => {
+      if (i < limit) {
+        window.open(links[i].href, '_blank');
+        links[i].classList.add('clicked-link');
+        if (!links[i].textContent.includes('✅')) {
+          links[i].textContent += ' ✅';
+        }
         i++;
-        setTimeout(openNext,250);
+        setTimeout(openNext, 400);
       }
     };
     openNext();
-    if (links.length>10) alert("Only the first 10 links were opened.");
+    if (links.length > 10) {
+      alert("Only the first 10 links were opened.");
+    }
   });
 
   let deferredPrompt;
